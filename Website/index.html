@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Temperature Checking</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->	
+	<link rel="icon" type="image/png" href="images/icons/title.png"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animate/animate.css">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="vendor/css-hamburgers/hamburgers.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/animsition/css/animsition.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="css/util.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+<!--===============================================================================================-->
+</head>
+<body>
+	
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-50">
+				<form class="login100-form validate-form">
+					<span class="login100-form-title p-b-33">
+						Checking Your Temperature
+					</span>
+					<script type="text/javascript">
+				        jQuery(document).ready(function(){
+				            // Create a client instance
+				            client = new Paho.MQTT.Client("soldier.cloudmqtt.com", 14086,"WebIface");
+				            client.onConnectionLost = onConnectionLost;
+				            client.onMessageArrived = onMessageArrived;
+				            var options = {
+				                useSSL: 24086,
+				                userName: "oopnpxvl",
+				                password: " NuY4707G2k0n",
+				                onSuccess:onConnect,
+				                onFailure:doFail
+				            }
+				            // connect the client
+				            client.connect(options);
+				            function onConnect() {
+				                console.log("onConnect");
+				                client.subscribe("/cloudmqtt");
+				                client.subscribe("esp/dht11/temperature");
+				            }
+				            function doFail(e){
+				                console.log(e);
+				            }
+				            // called when the client loses its connection
+				            function onConnectionLost(responseObject) {
+				                if (responseObject.errorCode !== 0) {
+				                  console.log("onConnectionLost:"+responseObject.errorMessage);
+				                }
+				            }
+				            // called when a message arrives
+				            function onMessageArrived(message) {
+				                console.log("onMessageArrived:"+message.payloadString);
+				                if(message.destinationName == "esp/dht11/temperature"){
+				                    $('#pgbar-sensor').css({'width': message.payloadString+'%'});
+				                    $('#pgbar-sensor').attr({'aria-valuenow': message.payloadString});
+				                    $('#pgbar-sensor').html(message.payloadString+'%');
+				                }
+				            }
+				        });
+				    </script>
+				    <script type="text/javascript">
+				        // jQuery Script
+				        jQuery(document).ready(function(){
+				            $("#slider-suhu").slider();
+				            $("#slider-suhu").on("slide", function(slideEvt) {
+				                message = new Paho.MQTT.Message(slideEvt.value.toString());
+				                message.destinationName = "esp/dht11/temperature";
+				                client.send(message);
+				            });
+				    </script>
+					<div class="container-login100-form-btn m-t-20">
+						<button class="login100-form-btn">
+							Turn Off Sensor
+						</button>
+					</div>
+
+					<div class="text-center p-t-45 p-b-4">
+						<span class="txt1">
+							Don't Panic.!!!
+					</div>
+
+					<div class="text-center">
+						<span class="txt1">
+							We Can Do It To Fight COVID-19
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+
+<!--===============================================================================================-->
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/animsition/js/animsition.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/select2/select2.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/daterangepicker/moment.min.js"></script>
+	<script src="vendor/daterangepicker/daterangepicker.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/countdowntime/countdowntime.js"></script>
+<!--===============================================================================================-->
+	<script src="js/main.js"></script>
+
+</body>
+</html>
